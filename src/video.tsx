@@ -2,9 +2,19 @@ import React, { useRef, useEffect } from 'react';
 import './video.css';
 
 // ------ Video Component ------
+interface VideoPropsInterface {
+  children: never[];
+  volume: number;
+  stream: MediaStream | null;
+  id: string;
+  controls: boolean;
+  width: string;
+  height: string;
+}
 
-function Video(props) {
-  const elementRef = useRef(null);
+
+function Video(props: VideoPropsInterface) {
+  const elementRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const stream = props.stream;
@@ -13,20 +23,22 @@ function Video(props) {
       volumeValue = props.volume;
     }
 
-    if (elementRef.current) {
-      if (elementRef.current.srcObject === stream) {
+    const current: HTMLVideoElement | null = elementRef.current;
+    if (current != null) {
+      if (current.srcObject === stream) {
         console.log('useEffect() same stream, so skip:', stream);
       }
       else {
-        elementRef.current.srcObject = stream;
+        current.srcObject = stream;
         console.log('useEffect() set stream:', stream);
       }
 
-      elementRef.current.volume = volumeValue;
+      current.volume = volumeValue;
     }
     else {
       console.log('useEffect() ref.current NULL');
     }
+
   });
 
   console.log('Video rendering, id=%s', props.id);

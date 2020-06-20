@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Video from './video'; // video.js
+import Video from './video'; // video.tsx
 import Sora from 'sora-js-sdk';
 
 import './index.css';
