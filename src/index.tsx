@@ -1,7 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Video from './video'; // video.tsx
-import Sora from 'sora-js-sdk';
+//import Sora from 'sora-js-sdk';
+import Sora, {
+  //AudioCodecType,
+  ConnectionOptions,
+  ConnectionPublisher,
+  //ConnectionSubscriber,
+  VideoCodecType,
+} from "sora-js-sdk";
+
+import { MouseEvent } from 'react';
 
 import './index.css';
 
@@ -52,14 +61,30 @@ const debug = false; //true;
 const sora = Sora.connection(signalingUrl, debug);
 
 // ------ App class ------
+// interface SoraAppPropsInterface {
+//   text?: string;
+// }
+
+interface SoraAppStateInterface {
+  playing: boolean;
+  connected: boolean;
+  roomId: string;
+  signalingKey: string;
+  videoCodec: VideoCodecType;
+  remoteStreams: { [key: string]: MediaStream; }
+}
+
 class App extends React.Component {
-  constructor(props) {
+  localStream: MediaStream | null;
+  publisher: ConnectionPublisher | null;
+  state: SoraAppStateInterface;
+
+  constructor(props: object) {
     super(props);
     this.localStream = null;
     this.state = {
       playing: false,
       connected: false,
-      //gotRemoteStream: false,
       roomId: roomId,
       signalingKey: signalingKey,
       videoCodec: 'VP9',
@@ -68,7 +93,8 @@ class App extends React.Component {
 
     // This binding is necessary to make `this` work in the callback
     this.startVideo = this.startVideo.bind(this);
-    this.stopVideo = this.stopVideo.bind(this);
+    this.stopVideoHandler = this.stopVideoHandler.bind(this);
+    //this.stopVideo = this.stopVideo.bind(this);
     this.connect = this.connect.bind(this);
     this.disconnect = this.disconnect.bind(this);
     this.handleRoomChange = this.handleRoomChange.bind(this);
@@ -95,7 +121,7 @@ class App extends React.Component {
   }
 
   // -----------
-  startVideo(e) {
+  startVideo(e: MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     console.log('start Video');
     if (this.localStream) {
@@ -112,15 +138,30 @@ class App extends React.Component {
       .catch(err => console.error('media ERROR:', err));
   }
 
-  stopVideo(e) {
+  // stopVideo(e) {
+  //   e.preventDefault();
+  //   console.log('stop Video');
+  //   if (this.localStream) {
+  //     this.localStream.getTracks().forEach(track => track.stop());
+  //     this.localStream = null;
+  //     this.setState({ playing: false });
+  //   }
+  // }
+
+  stopVideoHandler(e: MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     console.log('stop Video');
+    this.stopVideo();
+  }
+
+  stopVideo() {
     if (this.localStream) {
       this.localStream.getTracks().forEach(track => track.stop());
       this.localStream = null;
       this.setState({ playing: false });
     }
   }
+
 
   // const metadata = {
   //   signaling_key: "jGTYhHBYhIF0IvzTTvPub0aO8qsmshksqACOCou2GrcOSNTa"
@@ -131,7 +172,7 @@ class App extends React.Component {
   // const publisher = sora.publisher(channelId, metadata, options);
 
   // -----------------
-  connect(e) {
+  connect(e: MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     console.log('connect');
     if (this.publisher) {
@@ -142,7 +183,7 @@ class App extends React.Component {
     const metadata = {
       signaling_key: this.state.signalingKey
     };
-    const options = {
+    const options: ConnectionOptions = {
       audio: true,
       multistream: true,
       video: true,
@@ -161,7 +202,7 @@ class App extends React.Component {
     //   const id = 'remote_' + event.stream.id;
     //   app.addRemoteStream(id, event.stream);
     // });
-    this.publisher.on('track', function (event) {
+    this.publisher.on('track', function (event: any) {
       const stream = event.streams[0];
       if (stream) {
         console.log('addtrack stream.id=%s', stream.id);
@@ -184,7 +225,7 @@ class App extends React.Component {
     //   app.removeRemoteStream(id);
     // });
 
-    this.publisher.on('removetrack', function (event) {
+    this.publisher.on('removetrack', function (event: any) {
       const kind = event.track?.kind;
       const targetStream = event.target;
       const trackCount = targetStream.getTracks().length;
@@ -198,24 +239,26 @@ class App extends React.Component {
       app.removeRemoteStream(id);
     });
 
-    this.publisher.on('disconnect', e => {
+    this.publisher.on('disconnect', (e: any) => {
       console.log('sora disconnected:', e);
       this.handleDisconnect()
     });
 
-    this.publisher.connect(this.localStream)
-      .then(() => {
-        console.log('sora connected');
-        app.setState({ connected: true });
-      })
-      .catch(err => {
-        console.error('sora connect ERROR:', err);
-        this.publisher = null;
-        this.setState({ connected: false });
-      });
+    if (this.localStream != null) {
+      this.publisher.connect(this.localStream)
+        .then(() => {
+          console.log('sora connected');
+          app.setState({ connected: true });
+        })
+        .catch(err => {
+          console.error('sora connect ERROR:', err);
+          this.publisher = null;
+          this.setState({ connected: false });
+        });
+    }
   }
 
-  disconnect(e) {
+  disconnect(e: MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     console.log('disconnect');
     this.handleDisconnect();
@@ -237,15 +280,15 @@ class App extends React.Component {
     this.setState({ connected: false });
   }
 
-  handleRoomChange(e) {
+  handleRoomChange(e: any) {
     this.setState({ roomId: e.target.value });
   }
 
-  handleKeyChange(e) {
+  handleKeyChange(e: any) {
     this.setState({ signalingKey: e.target.value });
   }
 
-  handleCodecChange(e) {
+  handleCodecChange(e: any) {
     this.setState({ videoCodec: e.target.value });
   }
 
@@ -255,7 +298,7 @@ class App extends React.Component {
   //   this.setState({ remoteStreams: clonedStreams });
   // }
 
-  addRemoteStream(id, stream) {
+  addRemoteStream(id: string, stream: MediaStream) {
     if (this.state.remoteStreams[id]) {
       // already exist
       console.log('remote stream ALREADY exist id=' + id);
@@ -267,7 +310,7 @@ class App extends React.Component {
     this.setState({ remoteStreams: clonedStreams });
   }
 
-  removeRemoteStream(id) {
+  removeRemoteStream(id: string) {
     const clonedStreams = Object.assign({}, this.state.remoteStreams);
     delete clonedStreams[id];
     this.setState({ remoteStreams: clonedStreams });
@@ -282,9 +325,9 @@ class App extends React.Component {
   render() {
     console.log('App render()');
 
-    const remoteVideos = [];
-    Object.keys(this.state.remoteStreams).forEach(function (key) {
-      const stream = this[key]; // this は this.state.remoteStream
+    const remoteVideos: JSX.Element[] = [];
+    Object.keys(this.state.remoteStreams).forEach(function (this: { [key: string]: MediaStream; }, key: string) {
+      const stream: MediaStream = this[key]; // this は this.state.remoteStream
       console.log('key=id=%s, stream.id=%s', key, stream.id);
       remoteVideos.push(
         <Video id={key} key={key} width={"320px"} height={"240px"} volume={0.5} controls={true} stream={stream}>
@@ -306,14 +349,14 @@ class App extends React.Component {
         <button onClick={this.startVideo} disabled={this.state.playing || this.state.connected}> Start Video</button >
         <button onClick={this.stopVideo} disabled={!this.state.playing || this.state.connected}>Stop Video</button>
         <br />
-        SignalingKey: <input id="signaling_key" type="text" size="32" value={this.state.signalingKey} onChange={this.handleKeyChange} disabled={this.state.connected}></input>
+        SignalingKey: <input id="signaling_key" type="text" size={32} value={this.state.signalingKey} onChange={this.handleKeyChange} disabled={this.state.connected}></input>
         <br />
         Room: <input id="room_id" type="text" value={this.state.roomId} onChange={this.handleRoomChange} disabled={this.state.connected}></input>
         <button onClick={this.connect} disabled={this.state.connected || !this.state.playing}> Connect</button >
         <button onClick={this.disconnect} disabled={!this.state.connected}>Disconnect</button>
         <br />
         <div className="VideoContainer">
-          <Video id={"local_video"} width={"160px"} height={"120px"} stream={this.localStream}>
+          <Video id={"local_video"} width={"160px"} height={"120px"} stream={this.localStream} volume={0} controls={false}>
           </Video>
           <div className="RemoteContainer">
             {remoteVideos}
