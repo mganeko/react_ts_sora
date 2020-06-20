@@ -94,7 +94,7 @@ class App extends React.Component {
     // This binding is necessary to make `this` work in the callback
     this.startVideo = this.startVideo.bind(this);
     this.stopVideoHandler = this.stopVideoHandler.bind(this);
-    //this.stopVideo = this.stopVideo.bind(this);
+    this.stopVideo = this.stopVideo.bind(this);
     this.connect = this.connect.bind(this);
     this.disconnect = this.disconnect.bind(this);
     this.handleRoomChange = this.handleRoomChange.bind(this);
@@ -280,15 +280,15 @@ class App extends React.Component {
     this.setState({ connected: false });
   }
 
-  handleRoomChange(e: any) {
+  handleRoomChange(e: React.ChangeEvent<HTMLInputElement>) {
     this.setState({ roomId: e.target.value });
   }
 
-  handleKeyChange(e: any) {
+  handleKeyChange(e: React.ChangeEvent<HTMLInputElement>) {
     this.setState({ signalingKey: e.target.value });
   }
 
-  handleCodecChange(e: any) {
+  handleCodecChange(e: React.ChangeEvent<HTMLSelectElement>) {
     this.setState({ videoCodec: e.target.value });
   }
 
