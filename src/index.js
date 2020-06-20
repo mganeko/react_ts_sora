@@ -153,42 +153,21 @@ class App extends React.Component {
     //console.log('app:', app);
 
     console.log('connecting roomId=%s codec=%s key=%s', this.state.roomId, options.videoCodecType, this.state.signalingKey);
-    this.publisher = sora.publisher(this.state.roomId, metadata, options);
+    this.publisher = sora.sendrecv(this.state.roomId, metadata, options);
     this.publisher.on('addstream', function (event) {
       console.log('addstream id=%s', event.stream.id);
-
-      // --- test for 1 stream --
-      // app.remoteStream1 = event.stream;
-      // app.setState({ gotRemoteStream: true });
 
       // --- for multi stream ---
       const id = 'remote_' + event.stream.id;
       app.addRemoteStream(id, event.stream);
-
-      // var remoteVideo = document.createElement('video');
-      // remoteVideo.id = 'publisher-remote-video-' + event.stream.id;
-      // remoteVideo.autoplay = true;
-      // remoteVideo.srcObject = event.stream;
-
-      // var remoteVideos = document.querySelector('#remote-videos');
-      // remoteVideos.appendChild(remoteVideo);
     });
 
     this.publisher.on('removestream', function (event) {
       console.log('removestream id=%s', event.stream.id);
 
-      // --- test for 1 stream --
-      // app.remoteStream1 = null;
-      // app.setState({ gotRemoteStream: false });
-
       // --- for multi stream ---
       const id = 'remote_' + event.stream.id;
       app.removeRemoteStream(id);
-
-
-      // var remoteVideo = document.querySelector('#publisher-remotevideo-' + event.stream.id);
-      // var remoteVideos = document.querySelector('#remote-videos');
-      // remoteVideos.removeChild(remoteVideo);
     });
 
     this.publisher.on('disconnect', e => {
