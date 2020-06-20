@@ -202,7 +202,7 @@ class App extends React.Component {
     //   const id = 'remote_' + event.stream.id;
     //   app.addRemoteStream(id, event.stream);
     // });
-    this.publisher.on('track', function (event: any) {
+    this.publisher.on('track', function (event: RTCTrackEvent) {
       const stream = event.streams[0];
       if (stream) {
         console.log('addtrack stream.id=%s', stream.id);
@@ -225,18 +225,20 @@ class App extends React.Component {
     //   app.removeRemoteStream(id);
     // });
 
-    this.publisher.on('removetrack', function (event: any) {
+    this.publisher.on('removetrack', function (event: MediaStreamTrackEvent) {
       const kind = event.track?.kind;
-      const targetStream = event.target;
-      const trackCount = targetStream.getTracks().length;
-      console.log('removetracks stream.id=%s, trackKind=%s, track count=%d', targetStream.id, kind, trackCount);
-      if (trackCount > 0) {
-        return;
-      }
+      const targetStream = event.target as MediaStream;
+      if (targetStream != null) {
+        const trackCount = targetStream.getTracks().length;
+        console.log('removetracks stream.id=%s, trackKind=%s, track count=%d', targetStream.id, kind, trackCount);
+        if (trackCount > 0) {
+          return;
+        }
 
-      // --- for multi stream ---
-      const id = 'remote_' + targetStream.id;
-      app.removeRemoteStream(id);
+        // --- for multi stream ---
+        const id = 'remote_' + targetStream.id;
+        app.removeRemoteStream(id);
+      }
     });
 
     this.publisher.on('disconnect', (e: any) => {
