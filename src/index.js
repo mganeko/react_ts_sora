@@ -154,19 +154,47 @@ class App extends React.Component {
 
     console.log('connecting roomId=%s codec=%s key=%s', this.state.roomId, options.videoCodecType, this.state.signalingKey);
     this.publisher = sora.sendrecv(this.state.roomId, metadata, options);
-    this.publisher.on('addstream', function (event) {
-      console.log('addstream id=%s', event.stream.id);
+    // this.publisher.on('addstream', function (event) {
+    //   console.log('addstream id=%s', event.stream.id);
+
+    //   // --- for multi stream ---
+    //   const id = 'remote_' + event.stream.id;
+    //   app.addRemoteStream(id, event.stream);
+    // });
+    this.publisher.on('track', function (event) {
+      const stream = event.streams[0];
+      if (stream) {
+        console.log('addtrack stream.id=%s', stream.id);
+      }
+      else {
+        console.warn('NO stream in on track');
+        return;
+      }
 
       // --- for multi stream ---
-      const id = 'remote_' + event.stream.id;
-      app.addRemoteStream(id, event.stream);
+      const id = 'remote_' + stream.id;
+      app.addRemoteStream(id, stream);
     });
 
-    this.publisher.on('removestream', function (event) {
-      console.log('removestream id=%s', event.stream.id);
+    // this.publisher.on('removestream', function (event) {
+    //   console.log('removestream id=%s', event.stream.id);
+
+    //   // --- for multi stream ---
+    //   const id = 'remote_' + event.stream.id;
+    //   app.removeRemoteStream(id);
+    // });
+
+    this.publisher.on('removetrack', function (event) {
+      const kind = event.track?.kind;
+      const targetStream = event.target;
+      const trackCount = targetStream.getTracks().length;
+      console.log('removetracks stream.id=%s, trackKind=%s, track count=%d', targetStream.id, kind, trackCount);
+      if (trackCount > 0) {
+        return;
+      }
 
       // --- for multi stream ---
-      const id = 'remote_' + event.stream.id;
+      const id = 'remote_' + targetStream.id;
       app.removeRemoteStream(id);
     });
 
@@ -221,13 +249,25 @@ class App extends React.Component {
     this.setState({ videoCodec: e.target.value });
   }
 
+  // addRemoteStream(id, stream) {
+  //   const clonedStreams = Object.assign({}, this.state.remoteStreams);
+  //   clonedStreams[id] = stream;
+  //   this.setState({ remoteStreams: clonedStreams });
+  // }
+
   addRemoteStream(id, stream) {
+    if (this.state.remoteStreams[id]) {
+      // already exist
+      console.log('remote stream ALREADY exist id=' + id);
+      return;
+    }
+
     const clonedStreams = Object.assign({}, this.state.remoteStreams);
     clonedStreams[id] = stream;
     this.setState({ remoteStreams: clonedStreams });
   }
 
-  removeRemoteStream(id, stream) {
+  removeRemoteStream(id) {
     const clonedStreams = Object.assign({}, this.state.remoteStreams);
     delete clonedStreams[id];
     this.setState({ remoteStreams: clonedStreams });
