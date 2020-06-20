@@ -1,8 +1,8 @@
-# React.js - Sora Example
+# React.js/TypeScript - Sora Example
 
-React.js exmaple for [Sora Labo](https://sora-labo.shiguredo.jp).
+React.js and TypeScript exmaple for [Sora Labo](https://sora-labo.shiguredo.jp).
 
-これは WebRTC SFU Sora の検証サービス [Sora Labo](https://sora-labo.shiguredo.jp) 向けの、React.jsによるサンプルです。
+これは WebRTC SFU Sora の検証サービス [Sora Labo](https://sora-labo.shiguredo.jp) 向けの、React.js/TypeScript によるサンプルです。
 
 - [sora-js-sdk](https://github.com/shiguredo/sora-js-sdk) を利用しています(Apache 2.0 ライセンス)
 
@@ -18,9 +18,9 @@ React.js exmaple for [Sora Labo](https://sora-labo.shiguredo.jp).
 - GitHub アカウントで、[Sora Labo](https://sora-labo.shiguredo.jp) にサインアップ
 - シグナリングキーを取得
 
-## GitHub Pages で実行
+## GitHub Pages で実行（準備中）
 
-- ブラウザを2つ起動、それぞれ https://mganeko.github.io/reactjs_sora/ にアクセス
+- ブラウザを2つ起動、それぞれ https://mganeko.github.io/react_ts_sora/ にアクセス
 - Video Codec を選び、[Start Video]ボタンをクリック
 - SignalingKey: に Sora Labo のシグナリングキーを入力
 - Room: にルーム名(Channel名)を入力
@@ -29,13 +29,13 @@ React.js exmaple for [Sora Labo](https://sora-labo.shiguredo.jp).
 
 URLを次の形式で指定することで、シグナリングキーとルーム名を指定可能
 
-- https://mganeko.github.io/reactjs_sora/?room=ルーム名&key=シグナリングキー
+- https://mganeko.github.io/react_ts_sora/?room=ルーム名&key=シグナリングキー
 
 
 ## 開発環境で実行
 
-- $ git clone https://github.com/mganeko/reactjs_sora.git
-- $ cd reactjs_sora
+- $ git clone https://github.com/mganeko/react_ts_sora.git
+- $ cd react_ts_sora
 - $ npm install 
 - $ npm start
 - http:localhost:3000 にブラウザでアクセス
@@ -43,8 +43,8 @@ URLを次の形式で指定することで、シグナリングキーとルー�
 
 ## 自分のサーバーで実行
 
-- $ git clone https://github.com/mganeko/reactjs_sora.git
-- $ cd reactjs_sora
+- $ git clone https://github.com/mganeko/react_ts_sora.git
+- $ cd react_ts_sora
 - $ npm install 
 - $ npm run build
 - build/ 以下をWebサーバーに配置(要https)
