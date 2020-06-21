@@ -18,7 +18,7 @@ React.js and TypeScript exmaple for [Sora Labo](https://sora-labo.shiguredo.jp).
 - GitHub アカウントで、[Sora Labo](https://sora-labo.shiguredo.jp) にサインアップ
 - シグナリングキーを取得
 
-## GitHub Pages で実行（準備中）
+## GitHub Pages で実行
 
 - ブラウザを2つ起動、それぞれ https://mganeko.github.io/react_ts_sora/ にアクセス
 - Video Codec を選び、[Start Video]ボタンをクリック
