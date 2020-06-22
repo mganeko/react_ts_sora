@@ -4,10 +4,10 @@ import './video.css';
 // ------ Video Component ------
 interface VideoPropsInterface {
   children: never[];
-  volume: number;
+  volume?: number;
   stream: MediaStream | null;
   id: string;
-  controls: boolean;
+  controls?: boolean;
   width: string;
   height: string;
 }

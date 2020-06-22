@@ -358,7 +358,7 @@ class App extends React.Component {
         <button onClick={this.disconnect} disabled={!this.state.connected}>Disconnect</button>
         <br />
         <div className="VideoContainer">
-          <Video id={"local_video"} width={"160px"} height={"120px"} stream={this.localStream} volume={0} controls={false}>
+          <Video id={"local_video"} width={"160px"} height={"120px"} stream={this.localStream} >
           </Video>
           <div className="RemoteContainer">
             {remoteVideos}
