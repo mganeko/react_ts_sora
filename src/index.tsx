@@ -16,8 +16,6 @@ import './index.css';
 
 // ----
 // TODO
-//  - video not shown, ref is Null on addstream
-//    - maybe useEffect is usefull
 // ----
 
 // ------ params -----
@@ -106,7 +104,6 @@ class App extends React.Component {
 
     // -- Sora connection --
     this.publisher = null;
-    //this.remoteStream1 = null;
   }
 
   componentDidMount() {
@@ -138,16 +135,6 @@ class App extends React.Component {
       .catch(err => console.error('media ERROR:', err));
   }
 
-  // stopVideo(e) {
-  //   e.preventDefault();
-  //   console.log('stop Video');
-  //   if (this.localStream) {
-  //     this.localStream.getTracks().forEach(track => track.stop());
-  //     this.localStream = null;
-  //     this.setState({ playing: false });
-  //   }
-  // }
-
   stopVideoHandler(e: MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     console.log('stop Video');
@@ -161,15 +148,6 @@ class App extends React.Component {
       this.setState({ playing: false });
     }
   }
-
-
-  // const metadata = {
-  //   signaling_key: "jGTYhHBYhIF0IvzTTvPub0aO8qsmshksqACOCou2GrcOSNTa"
-  // };
-  // const options = {
-  //   multistream: true
-  // };
-  // const publisher = sora.publisher(channelId, metadata, options);
 
   // -----------------
   connect(e: MouseEvent<HTMLButtonElement>) {
@@ -195,13 +173,7 @@ class App extends React.Component {
 
     console.log('connecting roomId=%s codec=%s key=%s', this.state.roomId, options.videoCodecType, this.state.signalingKey);
     this.publisher = sora.sendrecv(this.state.roomId, metadata, options);
-    // this.publisher.on('addstream', function (event) {
-    //   console.log('addstream id=%s', event.stream.id);
 
-    //   // --- for multi stream ---
-    //   const id = 'remote_' + event.stream.id;
-    //   app.addRemoteStream(id, event.stream);
-    // });
     this.publisher.on('track', function (event: RTCTrackEvent) {
       const stream = event.streams[0];
       if (stream) {
@@ -216,14 +188,6 @@ class App extends React.Component {
       const id = 'remote_' + stream.id;
       app.addRemoteStream(id, stream);
     });
-
-    // this.publisher.on('removestream', function (event) {
-    //   console.log('removestream id=%s', event.stream.id);
-
-    //   // --- for multi stream ---
-    //   const id = 'remote_' + event.stream.id;
-    //   app.removeRemoteStream(id);
-    // });
 
     this.publisher.on('removetrack', function (event: MediaStreamTrackEvent) {
       const kind = event.track?.kind;
@@ -276,9 +240,6 @@ class App extends React.Component {
     }
 
     this.removeAllRemoteStream();
-
-    //this.remoteStream1 = null;
-    //this.setState({ connected: false, gotRemoteStream: false });
     this.setState({ connected: false });
   }
 
@@ -293,12 +254,6 @@ class App extends React.Component {
   handleCodecChange(e: React.ChangeEvent<HTMLSelectElement>) {
     this.setState({ videoCodec: e.target.value });
   }
-
-  // addRemoteStream(id, stream) {
-  //   const clonedStreams = Object.assign({}, this.state.remoteStreams);
-  //   clonedStreams[id] = stream;
-  //   this.setState({ remoteStreams: clonedStreams });
-  // }
 
   addRemoteStream(id: string, stream: MediaStream) {
     if (this.state.remoteStreams[id]) {
@@ -362,10 +317,6 @@ class App extends React.Component {
           </Video>
           <div className="RemoteContainer">
             {remoteVideos}
-            { /*
-            <Video id={"remote_video"} width={"320px"} height={"240px"} volume={0.5} controls={true} stream={this.remoteStream1}>
-            </Video>
-            */ }
           </div>
         </div>
       </div >
