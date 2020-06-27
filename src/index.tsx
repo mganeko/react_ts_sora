@@ -34,7 +34,7 @@ if (keyFromUrl && (keyFromUrl !== '')) {
 }
 
 // ---- URL ----
-function getRoomFromUrl() {
+function getRoomFromUrl(): string {
   const search = window.location.search;
   const re = new RegExp('room=([^&=]+)');
   const results = re.exec(search);
@@ -45,7 +45,7 @@ function getRoomFromUrl() {
   return room;
 }
 
-function getKeyFromUrl() {
+function getKeyFromUrl(): string | null {
   const search = window.location.search;
   const re = new RegExp('key=([^&=]+)');
   const results = re.exec(search);
